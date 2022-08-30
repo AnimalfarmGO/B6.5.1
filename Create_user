@@ -1,0 +1,40 @@
+#test.yml
+
+---
+  - hosts: "remote-host"
+    gather_facts: no
+    roles:
+      - ssh
+
+#/ansible/inventory/hosts
+
+[remote-host]
+130.193.39.79
+
+[all]
+84.201.156.225
+130.193.39.79
+
+#/ansible/roles/ssh/tasks/main.yml
+---
+- name: add testuser
+  ansible.builtin.user:
+    name: testuser
+    shell: /bin/bash
+    append: yes
+
+- name: Create ~/.ssh directory
+  file:
+    path: /home/testuser/.ssh
+    state: directory
+    mode: 0700
+    owner: testuser
+    group: testuser
+
+- name: Add testuser public key
+  copy:
+    src: /home/gbykov/.ssh/id_rsa.pub
+    dest: /home/testuser/.ssh/authorized_keys
+    mode: 0644
+    owner: testuser
+    group: testuser
