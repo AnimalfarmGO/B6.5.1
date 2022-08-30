@@ -1,0 +1,45 @@
+---
+  - hosts: "remote-host"
+    gather_facts: no
+    roles:
+      - postfix
+
+#/ansible/inventory/hosts
+
+[remote-host]
+130.193.39.79
+
+[all]
+84.201.156.225
+130.193.39.79
+
+- name: Install/enable epel-repo
+  yum:
+    name:
+      - epel-release
+    state: present
+  tags: init postfix
+- name: Install postfix
+  yum:
+    name:
+      - postfix
+    state: present
+  tags: init postfix
+- name: Start postfix service
+  service:
+    name: postfix
+    state: started
+    enabled: yes
+  tags: init postfix
+- name: Stop postfix service
+  service:
+    name: postfix
+    state: stopped
+    enabled: no
+  tags: drop postfix
+- name: Drop postfix
+  yum:
+    name:
+      - postfix
+    state: absent
+  tags: drop postfix
